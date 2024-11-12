@@ -4,6 +4,9 @@ import CadastroEleitor from '../cadastro/cadastroEleitor';
 import Dashboard from '../dashboard/Dashboard'; // Adicione esta linha
 import GerenciamentoDemandas from '../demandas/GerenciamentoDemandas';
 import EspacoLegislativo from '../legislativo/EspacoLegislativo';
+import Agenda from '../agenda/Agenda';
+
+
 
 
 
@@ -32,6 +35,8 @@ const SistemaGestao = () => {
   return <GerenciamentoDemandas />;
   case 'legislativo':
   return <EspacoLegislativo />;
+  case 'agenda':
+  return <Agenda />;
     }
   };
 

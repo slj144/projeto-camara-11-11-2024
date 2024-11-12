@@ -126,3 +126,114 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((error) => {
     console.error('Erro ao conectar com MongoDB:', error);
   });
+  // Modelo da Agenda
+const agendaSchema = new mongoose.Schema({
+  titulo: { type: String, required: true },
+  dataEvento: { type: Date, required: true },
+  horaInicio: { type: String, required: true },
+  horaFim: { type: String, required: true },
+  local: { type: String, required: true },
+  tipo: { 
+    type: String, 
+    enum: ['Sessão Ordinária', 'Sessão Extraordinária', 'Reunião', 'Audiência Pública', 'Evento'],
+    required: true
+  },
+  descricao: String,
+  participantes: [String],
+  status: {
+    type: String,
+    enum: ['Agendado', 'Em Andamento', 'Concluído', 'Cancelado'],
+    default: 'Agendado'
+  },
+  dataCriacao: { type: Date, default: Date.now },
+  responsavel: String,
+  observacoes: String
+});
+
+const Agenda = mongoose.model('Agenda', agendaSchema);
+
+// Rotas para Agenda
+app.post('/api/agenda', async (req, res) => {
+  try {
+    const evento = new Agenda(req.body);
+    await evento.save();
+    res.status(201).json(evento);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/agenda', async (req, res) => {
+  try {
+    const { tipo, status, dataInicio, dataFim } = req.query;
+    let filtro = {};
+    
+    if (tipo) filtro.tipo = tipo;
+    if (status) filtro.status = status;
+    if (dataInicio || dataFim) {
+      filtro.dataEvento = {};
+      if (dataInicio) filtro.dataEvento.$gte = new Date(dataInicio);
+      if (dataFim) filtro.dataEvento.$lte = new Date(dataFim);
+    }
+
+    const eventos = await Agenda.find(filtro).sort({ dataEvento: 1 });
+    res.json(eventos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/agenda/:id', async (req, res) => {
+  try {
+    const evento = await Agenda.findById(req.params.id);
+    if (!evento) {
+      return res.status(404).json({ message: 'Evento não encontrado' });
+    }
+    res.json(evento);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/agenda/:id', async (req, res) => {
+  try {
+    const evento = await Agenda.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(evento);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete('/api/agenda/:id', async (req, res) => {
+  try {
+    await Agenda.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rota para eventos do dia
+app.get('/api/agenda/eventos/hoje', async (req, res) => {
+  try {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const amanha = new Date(hoje);
+    amanha.setDate(amanha.getDate() + 1);
+
+    const eventos = await Agenda.find({
+      dataEvento: {
+        $gte: hoje,
+        $lt: amanha
+      }
+    }).sort({ horaInicio: 1 });
+
+    res.json(eventos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
