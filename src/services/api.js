@@ -22,3 +22,23 @@ export const buscarEstatisticas = async () => {
     const response = await api.get('/estatisticas');
     return response.data;
   };
+  // Adicione estas funções
+export const criarDemanda = async (dados) => {
+  const response = await api.post('/demandas', dados);
+  return response.data;
+};
+
+export const listarDemandas = async (filtros = {}) => {
+  const response = await api.get('/demandas', { params: filtros });
+  return response.data;
+};
+
+export const atualizarDemanda = async (id, dados) => {
+  const response = await api.put(`/demandas/${id}`, dados);
+  return response.data;
+};
+
+export const adicionarObservacao = async (id, observacao) => {
+  const response = await api.post(`/demandas/${id}/observacoes`, observacao);
+  return response.data;
+};

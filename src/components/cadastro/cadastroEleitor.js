@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // Remova os ícones que não estão sendo usados da importação
 import { Camera, Save } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '../ui/car';
+import { Card, CardHeader, CardContent } from '../ui/card';
 import { Alert, AlertDescription } from '../ui/arlet';
 
 const CadastroEleitor = () => {

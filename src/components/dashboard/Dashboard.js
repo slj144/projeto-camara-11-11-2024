@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, CalendarClock, MapPin, BarChart2 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/car.jsx';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card.jsx';
 
 const Dashboard = () => {
   const [estatisticas, setEstatisticas] = useState({

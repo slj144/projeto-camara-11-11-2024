@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Home, Users, Calendar, FileText, BarChart } from 'lucide-react';
+import { Home, Users, Calendar, FileText, BarChart, AlertCircle } from 'lucide-react';
 import CadastroEleitor from '../cadastro/cadastroEleitor';
 import Dashboard from '../dashboard/Dashboard'; // Adicione esta linha
+import GerenciamentoDemandas from '../demandas/GerenciamentoDemandas';
+import EspacoLegislativo from '../legislativo/EspacoLegislativo';
+
+
 
 const SistemaGestao = () => {
   const [menuAtivo, setMenuAtivo] = useState('dashboard');
@@ -11,7 +15,9 @@ const SistemaGestao = () => {
     { id: 'vereadores', nome: 'Eleitores', icone: Users },
     { id: 'agenda', nome: 'Agenda', icone: Calendar },
     { id: 'documentos', nome: 'Documentos', icone: FileText },
-    { id: 'relatorios', nome: 'Relatórios', icone: BarChart }
+    { id: 'relatorios', nome: 'Relatórios', icone: BarChart },
+    { id: 'demandas', nome: 'Demandas', icone: AlertCircle },
+    { id: 'legislativo', nome: 'Espaço Legislativo', icone: FileText },
   ];
 
   const renderConteudo = () => {
@@ -22,6 +28,10 @@ const SistemaGestao = () => {
         return <CadastroEleitor />;
       default:
         return <div>Em desenvolvimento...</div>;
+        case 'demandas':
+  return <GerenciamentoDemandas />;
+  case 'legislativo':
+  return <EspacoLegislativo />;
     }
   };
 
