@@ -1,42 +1,42 @@
 import React, { useState } from 'react';
-import { Home, Users, Calendar, FileText, BarChart, AlertCircle } from 'lucide-react';
-import CadastroEleitor from '../cadastro/cadastroEleitor';
-import Dashboard from '../dashboard/Dashboard'; // Adicione esta linha
-import GerenciamentoDemandas from '../demandas/GerenciamentoDemandas';
-import EspacoLegislativo from '../legislativo/EspacoLegislativo';
+import { Home, Users, Calendar, FileText, BarChart, MessageSquare } from 'lucide-react';
+import CadastroEleitor from '../cadastro/CadastroEleitor';
+import Dashboard from '../dashboard/Dashboard';
+import ListaEleitores from '../eleitores/ListaEleitores';
 import Agenda from '../agenda/Agenda';
-
-
-
-
+import Demandas from '../demandas/GerenciamentoDemandas';
+import EspacoLegislativo from '../legislativo/EspacoLegislativo';
 
 const SistemaGestao = () => {
   const [menuAtivo, setMenuAtivo] = useState('dashboard');
+  const [mostrarCadastro, setMostrarCadastro] = useState(false);
 
   const menuItems = [
     { id: 'dashboard', nome: 'Dashboard', icone: Home },
-    { id: 'vereadores', nome: 'Eleitores', icone: Users },
+    { id: 'eleitores', nome: 'Eleitores', icone: Users },
     { id: 'agenda', nome: 'Agenda', icone: Calendar },
+    { id: 'demandas', nome: 'Demandas', icone: MessageSquare },
     { id: 'documentos', nome: 'Documentos', icone: FileText },
     { id: 'relatorios', nome: 'Relatórios', icone: BarChart },
-    { id: 'demandas', nome: 'Demandas', icone: AlertCircle },
     { id: 'legislativo', nome: 'Espaço Legislativo', icone: FileText },
-  ];
+];
 
   const renderConteudo = () => {
     switch (menuAtivo) {
       case 'dashboard':
         return <Dashboard />;
-      case 'vereadores':
-        return <CadastroEleitor />;
+      case 'eleitores':
+        return mostrarCadastro ? 
+          <CadastroEleitor voltarParaLista={() => setMostrarCadastro(false)} /> : 
+          <ListaEleitores abrirCadastro={() => setMostrarCadastro(true)} />;
+      case 'agenda':
+        return <Agenda />;
+      case 'demandas':
+        return <Demandas />;
       default:
         return <div>Em desenvolvimento...</div>;
-        case 'demandas':
-  return <GerenciamentoDemandas />;
-  case 'legislativo':
-  return <EspacoLegislativo />;
-  case 'agenda':
-  return <Agenda />;
+        case 'legislativo':
+  return <EspacoLegislativo />
     }
   };
 
@@ -57,7 +57,12 @@ const SistemaGestao = () => {
                 className={`w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 ${
                   menuAtivo === item.id ? 'bg-blue-50 text-blue-600' : ''
                 }`}
-                onClick={() => setMenuAtivo(item.id)}
+                onClick={() => {
+                  setMenuAtivo(item.id);
+                  if (item.id !== 'eleitores') {
+                    setMostrarCadastro(false);
+                  }
+                }}
               >
                 <Icon className="w-5 h-5 mr-3" />
                 {item.nome}
@@ -72,6 +77,7 @@ const SistemaGestao = () => {
         <header className="mb-8">
           <h2 className="text-2xl font-bold text-gray-800">
             {menuItems.find(item => item.id === menuAtivo)?.nome}
+            {menuAtivo === 'eleitores' && mostrarCadastro && ' - Novo Cadastro'}
           </h2>
         </header>
 
@@ -82,6 +88,5 @@ const SistemaGestao = () => {
     </div>
   );
 };
-
 
 export default SistemaGestao;

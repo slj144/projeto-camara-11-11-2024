@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 // Remova os ícones que não estão sendo usados da importação
 import { Camera, Save } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '../ui/card';
-import { Alert, AlertDescription } from '../ui/arlet';
+import { Card, CardHeader, CardContent } from '../ui/card.jsx';
+import { Alert, AlertDescription } from '../ui/arlet.jsx';
 
 const CadastroEleitor = () => {
   // Removemos a variável 'foto' já que não estamos usando

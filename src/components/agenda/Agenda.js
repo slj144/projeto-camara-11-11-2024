@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, Plus, Edit2, Trash2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card.jsx';
 
+
 const Agenda = () => {
   const [eventos, setEventos] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
