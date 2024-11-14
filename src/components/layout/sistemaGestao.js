@@ -6,6 +6,7 @@ import ListaEleitores from '../eleitores/ListaEleitores';
 import Agenda from '../agenda/Agenda';
 import Demandas from '../demandas/GerenciamentoDemandas';
 import EspacoLegislativo from '../legislativo/EspacoLegislativo';
+import RelatorioEleitores from '../relatorios/RelatorioEleitores';
 
 const SistemaGestao = () => {
   const [menuAtivo, setMenuAtivo] = useState('dashboard');
@@ -21,24 +22,26 @@ const SistemaGestao = () => {
     { id: 'legislativo', nome: 'Espaço Legislativo', icone: FileText },
 ];
 
-  const renderConteudo = () => {
-    switch (menuAtivo) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'eleitores':
-        return mostrarCadastro ? 
-          <CadastroEleitor voltarParaLista={() => setMostrarCadastro(false)} /> : 
-          <ListaEleitores abrirCadastro={() => setMostrarCadastro(true)} />;
-      case 'agenda':
-        return <Agenda />;
-      case 'demandas':
-        return <Demandas />;
-      default:
-        return <div>Em desenvolvimento...</div>;
-        case 'legislativo':
-  return <EspacoLegislativo />
-    }
-  };
+const renderConteudo = () => {
+  switch (menuAtivo) {
+    case 'dashboard':
+      return <Dashboard />;
+    case 'eleitores':
+      return mostrarCadastro ? 
+        <CadastroEleitor voltarParaLista={() => setMostrarCadastro(false)} /> : 
+        <ListaEleitores abrirCadastro={() => setMostrarCadastro(true)} />;
+    case 'agenda':
+      return <Agenda />;
+    case 'demandas':
+      return <Demandas />;
+    case 'legislativo':
+      return <EspacoLegislativo />;
+    case 'relatorios':
+      return <RelatorioEleitores />;
+    default:
+      return <div>Em desenvolvimento...</div>;
+  }
+};
 
   return (
     <div className="flex h-screen bg-gray-100">

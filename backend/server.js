@@ -237,3 +237,109 @@ app.get('/api/agenda/eventos/hoje', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// Adicione isso antes das rotas de relatórios
+// Modelo do Eleitor
+const eleitorSchema = new mongoose.Schema({
+  nome: { type: String, required: true },
+  dataNascimento: { type: Date, required: true },
+  endereco: { type: String, required: true },
+  bairro: { type: String, required: true },
+  telefone: { type: String, required: true },
+  email: String,
+  observacoes: String,
+  foto: String,
+  dataCadastro: { type: Date, default: Date.now }
+});
+
+const Eleitor = mongoose.model('Eleitor', eleitorSchema);
+
+// CRUD Eleitores
+app.post('/api/eleitores', upload.single('foto'), async (req, res) => {
+  try {
+    const eleitor = new Eleitor({
+      ...req.body,
+      foto: req.file ? `/uploads/${req.file.filename}` : null
+    });
+    await eleitor.save();
+    res.status(201).json(eleitor);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/eleitores', async (req, res) => {
+  try {
+    const eleitores = await Eleitor.find().sort({ dataCadastro: -1 });
+    res.json(eleitores);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rota para relatórios de eleitores
+app.get('/api/relatorios/eleitores', async (req, res) => {
+  try {
+    // Adicionar log para debugar
+    console.log('Iniciando geração de relatório...');
+    
+    const periodo = parseInt(req.query.periodo) || 30;
+    console.log('Período:', periodo);
+    
+    const dataLimite = new Date();
+    dataLimite.setDate(dataLimite.getDate() - periodo);
+    console.log('Data limite:', dataLimite);
+
+    // Total de eleitores
+    const totalEleitores = await Eleitor.countDocuments();
+    console.log('Total de eleitores:', totalEleitores);
+
+    // Eleitores por bairro
+    const porBairro = await Eleitor.aggregate([
+      {
+        $group: {
+          _id: '$bairro',
+          quantidade: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          nome: '$_id',
+          quantidade: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: { quantidade: -1 }
+      }
+    ]);
+    console.log('Por bairro:', porBairro);
+
+    // Aniversariantes do mês atual
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth() + 1;
+    const aniversariantes = await Eleitor.find({
+      $expr: {
+        $eq: [{ $month: '$dataNascimento' }, mesAtual]
+      }
+    }).sort('dataNascimento');
+    console.log('Aniversariantes:', aniversariantes.length);
+
+    // Novos cadastros no período
+    const novosCadastros = await Eleitor.find({
+      dataCadastro: { $gte: dataLimite }
+    }).sort('-dataCadastro');
+    console.log('Novos cadastros:', novosCadastros.length);
+
+    res.json({
+      totalEleitores,
+      porBairro,
+      aniversariantes,
+      novosCadastros
+    });
+
+  } catch (error) {
+    // Log detalhado do erro
+    console.error('Erro detalhado ao gerar relatório:', error);
+    res.status(500).json({ error: 'Erro ao gerar relatório', detalhes: error.message });
+  }
+});
